@@ -11,9 +11,6 @@ class MoviesController < ApplicationController
   end
 
   def index
-    puts "********************"
-    puts params
-    puts "********************"
     
     @all_ratings = ['G','PG','PG-13','R']
   
@@ -25,8 +22,7 @@ class MoviesController < ApplicationController
       type_order = ""
     end
     
-    
-  
+    puts params
     if(params["ratings"] != nil)
       session[:selected_ratings] = params["ratings"].keys
       @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
@@ -36,6 +32,7 @@ class MoviesController < ApplicationController
     elsif (session[:selected_ratings] != nil)
       @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
     else
+      session[:selected_ratings] = @all_ratings
       @movies = Movie.order(session[:sort_movie_by])
     end
     

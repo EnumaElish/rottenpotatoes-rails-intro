@@ -1,7 +1,5 @@
 class MoviesController < ApplicationController
 
-  
-
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -13,15 +11,34 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @sort_by=''
-    sort_movie_by = params["sort_movie_by"]
-    if sort_movie_by == "title"
-      @movies = Movie.order("title ASC")
-    elsif sort_movie_by == "release_date"
-      @movies = Movie.order("release_date ASC")
+    puts "********************"
+    puts params
+    puts "********************"
+    
+    @all_ratings = ['G','PG','PG-13','R']
+  
+    if(params["sort_movie_by"] != nil)
+      session[:sort_movie_by] = params["sort_movie_by"]
+      type_order = " ASC"
     else
-      @movies = Movie.all
+      session[:sort_movie_by] = ""
+      type_order = ""
     end
+    
+    
+  
+    if(params["ratings"] != nil)
+      session[:selected_ratings] = params["ratings"].keys
+      @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
+    elsif(params["ratings"] == nil && params["commit"] == "Refresh")
+      @movies = Movie.all
+      session[:selected_ratings] = nil
+    elsif (session[:selected_ratings] != nil)
+      @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
+    else
+      @movies = Movie.order(session[:sort_movie_by])
+    end
+    
   end
 
   def new

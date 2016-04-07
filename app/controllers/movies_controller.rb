@@ -30,9 +30,9 @@ class MoviesController < ApplicationController
     if(params["ratings"] != nil)
       session[:selected_ratings] = params["ratings"].keys
       @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
-    elsif(params["ratings"] == nil && params["commit"] == "Refresh")
-      @movies = Movie.all
-      session[:selected_ratings] = nil
+    #elsif(params["ratings"] == nil && params["commit"] == "Refresh")
+      #@movies = Movie.all
+      #session[:selected_ratings] = nil
     elsif (session[:selected_ratings] != nil)
       @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
     else

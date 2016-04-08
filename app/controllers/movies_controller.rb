@@ -9,45 +9,43 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
-
+  
   def index
     
     @all_ratings = ['G','PG','PG-13','R']
-  
-    if(params["sort_movie_by"] != nil)
-      session[:sort_movie_by] = params["sort_movie_by"]
-      type_order = " ASC"
-    else
-      session[:sort_movie_by] = ""
-      type_order = ""
-    end
+    @hiliteHeader = ''
     
-    puts params
-    if(params["ratings"] != nil)
-      session[:selected_ratings] = params["ratings"].keys
-      @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
-    #elsif(params["ratings"] == nil && params["commit"] == "Refresh")
-      #@movies = Movie.all
-      #session[:selected_ratings] = nil
-    elsif (session[:selected_ratings] != nil)
-      @movies = Movie.where(:rating =>session[:selected_ratings]).order(session[:sort_movie_by] + type_order)
-    else
+    if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
       session[:selected_ratings] = @all_ratings
-      @movies = Movie.order(session[:sort_movie_by])
+      @selected_ratings = @all_ratings
+      @movies = Movie.all
     end
     
-  end
+    if (params["orderItems"] == "orderItems" )
+      session["sort_movie_by"] = params["sort_movie_by"]
+      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings:  session[:selected_ratings]
+    elsif (params["commit"] == "Refresh")
+    
+      if (params["ratings"]!=nil)
+        session[:selected_ratings] = params["ratings"].keys
+      else
+        session[:selected_ratings] = []
+        @selected_ratings = []
+      end
+        
+      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings:  session[:selected_ratings]
+    else
+      query_movies
+    end
 
-  def new
-    # default: render 'new' template
   end
-
-  def create
-    @movie = Movie.create!(movie_params)
-    flash[:notice] = "#{@movie.title} was successfully created."
-    redirect_to movies_path
+  
+  def query_movies
+      @selected_ratings = session[:selected_ratings]
+      @hiliteHeader = session["sort_movie_by"]
+      @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")
   end
-
+  
   def edit
     @movie = Movie.find params[:id]
   end
@@ -65,5 +63,15 @@ class MoviesController < ApplicationController
     flash[:notice] = "Movie '#{@movie.title}' deleted."
     redirect_to movies_path
   end
+  
+  def new
+    # default: render 'new' template
+  end
 
+  def create
+    @movie = Movie.create!(movie_params)
+    flash[:notice] = "#{@movie.title} was successfully created."
+    redirect_to movies_path
+  end
+  
 end

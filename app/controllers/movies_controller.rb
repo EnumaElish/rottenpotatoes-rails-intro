@@ -28,9 +28,10 @@ class MoviesController < ApplicationController
     
       if (params["ratings"]!=nil)
         session[:selected_ratings] = params["ratings"].keys
+        @selected_ratings = params["ratings"].keys
       else
-        session[:selected_ratings] = []
-        @selected_ratings = []
+        session[:selected_ratings] = ['']
+        @selected_ratings = ['']
       end
         
       redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings:  session[:selected_ratings]
@@ -43,7 +44,11 @@ class MoviesController < ApplicationController
   def query_movies
       @selected_ratings = session[:selected_ratings]
       @hiliteHeader = session["sort_movie_by"]
-      @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")
+      if(session["sort_movie_by"]!=nil)
+        @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")
+      else
+        @movies = Movie.where(:rating =>@selected_ratings)
+      end
   end
   
   def edit

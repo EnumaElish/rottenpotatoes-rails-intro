@@ -50,6 +50,7 @@ class MoviesController < ApplicationController
       flash.keep
       redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
     elsif (params["fromShow"] == "fromShow" && (session["sort_movie_by"]!=nil || session[:selected_ratings]=!nil))
+      flash.keep
       redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
     else
       query_movies
@@ -57,7 +58,12 @@ class MoviesController < ApplicationController
   end
   
   def query_movies
+    if(session[:selected_ratings].kind_of?(Array))
+      @selected_ratings = session[:selected_ratings]
+    else
       @selected_ratings = session[:selected_ratings].keys
+    end
+
       @hiliteHeader = session["sort_movie_by"]
       if(session["sort_movie_by"]!=nil && session["sort_movie_by"]!='')
         @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")

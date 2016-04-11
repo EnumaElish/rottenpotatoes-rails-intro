@@ -13,82 +13,39 @@ class MoviesController < ApplicationController
   def index
     
     @all_ratings = ['G','PG','PG-13','R']
-
-    if params["commit"] == "Refresh"
-      puts params
-      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings: params["ratings"]
-    elsif (params["source"] == "link")
-      puts params
-      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings: params["ratings"]
-    else
-      puts params
-      query_movies
+    @hiliteHeader = ''
+     puts params
+     
+   if(params.size==2)
+   # if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
+      session[:selected_ratings] = @all_ratings
+      @selected_ratings = @all_ratings
+      session["sort_movie_by"] = ''
+      @movies = Movie.all
     end
     
-  end
-  
-  def query_movies2
-    if params["sort_movie_by"] == "" || params["sort_movie_by"] == nil
-      if session["sort_movie_by"] == nil
-        sort_movie_by = ""
-        type_order = ""
-      else
-        params["sort_movie_by"] = session["sort_movie_by"] 
-        sort_movie_by = params["sort_movie_by"]
-        type_order = " ASC"  
-      end
-    else
+    if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
-      sort_movie_by = params["sort_movie_by"]
-      type_order = " ASC"
-    end
-    
-    if params["ratings"] != nil
-      @selected_ratings = params["ratings"].keys
-      session[:selected_ratings] = params["ratings"].keys
-      @movies = Movie.where(:rating =>@selected_ratings).order(sort_movie_by + type_order)
-    else
-      if session[:selected_ratings] == nil
-        @selected_ratings = @all_ratings
-        @movies = Movie.all
-      else
-        @selected_ratings = session[:selected_ratings]
-        
-        @movies = Movie.where(:rating =>@selected_ratings).order(sort_movie_by + type_order)
+      redirect_to controller: "movies", action: "index",sort_movie_by: session["sort_movie_by"],ratings: session[:selected_ratings]
+    elsif (params["commit"] == "Refresh")
+      if (params["ratings"]!=nil)
+        session[:selected_ratings] = params["ratings"].keys
+        @selected_ratings = params["ratings"].keys
       end
+      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"],ratings:  session[:selected_ratings]
+    else
+      query_movies
     end
   end
   
   def query_movies
-    if params["sort_movie_by"] == "" || params["sort_movie_by"] == nil
-      if session["sort_movie_by"] == nil
-        sort_movie_by = ""
-        type_order = ""
+      @selected_ratings = session[:selected_ratings]
+      @hiliteHeader = session["sort_movie_by"]
+      if(session["sort_movie_by"]!=nil && session["sort_movie_by"]!='')
+        @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")
       else
-        params["sort_movie_by"] = session["sort_movie_by"] 
-        sort_movie_by = params["sort_movie_by"]
-        type_order = " ASC"  
+        @movies = Movie.where(:rating =>@selected_ratings)
       end
-    else
-      session["sort_movie_by"] = params["sort_movie_by"]
-      sort_movie_by = params["sort_movie_by"]
-      type_order = " ASC"
-    end
-    
-    if params["ratings"] != nil
-      @selected_ratings = params["ratings"].keys
-      session[:selected_ratings] = params["ratings"].keys
-      @movies = Movie.where(:rating =>@selected_ratings).order(sort_movie_by + type_order)
-    else
-      if session[:selected_ratings] == nil
-        @selected_ratings = @all_ratings
-        @movies = Movie.all
-      else
-        @selected_ratings = session[:selected_ratings]
-        
-        @movies = Movie.where(:rating =>@selected_ratings).order(sort_movie_by + type_order)
-      end
-    end
   end
   
   def edit

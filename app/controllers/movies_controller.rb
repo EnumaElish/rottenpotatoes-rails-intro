@@ -11,29 +11,42 @@ class MoviesController < ApplicationController
   end
   
   def index
+        
     
     @all_ratings = ['G','PG','PG-13','R']
     @hiliteHeader = ''
-    
-    if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
+    puts params
+  
+   if(params.size == 2)
+   # if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
       session[:selected_ratings] = @all_ratings
       @selected_ratings = @all_ratings
       session["sort_movie_by"] = ''
       @movies = Movie.all
+  end
+  
+  if(params["ratings"]!=nil)
+    if (params["ratings"]!=session[:selected_ratings])
+      session[:selected_ratings] = params["ratings"]
+      @selected_ratings = params["ratings"]
     end
-    
+  end
+  
+  if (params["sort_movie_by"]!= nil)
+    if (params["sort_movie_by"]=='title'||params["sort_movie_by"]=='release_date' )
+      session["sort_movie_by"] = params["sort_movie_by"]
+    end
+  end
+  
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
-      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings:  session[:selected_ratings]
+      redirect_to controller: "movies", action: "index",sort_movie_by: session["sort_movie_by"],ratings: session[:selected_ratings]
     elsif (params["commit"] == "Refresh")
       if (params["ratings"]!=nil)
         session[:selected_ratings] = params["ratings"].keys
         @selected_ratings = params["ratings"].keys
-      else
-        session[:selected_ratings] = ['']
-        @selected_ratings = ['']
       end
-      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"], ratings:  session[:selected_ratings]
+      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"],ratings:  session[:selected_ratings]
     else
       query_movies
     end
@@ -76,5 +89,4 @@ class MoviesController < ApplicationController
     flash[:notice] = "#{@movie.title} was successfully created."
     redirect_to movies_path
   end
-  
 end

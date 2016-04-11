@@ -18,7 +18,7 @@ class MoviesController < ApplicationController
     puts params
   
    #if(params.size == 2)
-    if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
+  if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
       session[:selected_ratings] = @all_ratings
       @selected_ratings = @all_ratings
       session["sort_movie_by"] = ''
@@ -40,12 +40,16 @@ class MoviesController < ApplicationController
   
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
+      flash.keep
       redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
     elsif (params["commit"] == "Refresh")
       if (params["ratings"]!=nil)
-        session[:selected_ratings] = params["ratings"].keys
+        session[:selected_ratings] = params["ratings"]
         @selected_ratings = params["ratings"].keys
       end
+      flash.keep
+      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
+    elsif (params["fromShow"] == "fromShow" && (session["sort_movie_by"]!=nil || session[:selected_ratings]=!nil))
       redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
     else
       query_movies
@@ -53,7 +57,7 @@ class MoviesController < ApplicationController
   end
   
   def query_movies
-      @selected_ratings = session[:selected_ratings]
+      @selected_ratings = session[:selected_ratings].keys
       @hiliteHeader = session["sort_movie_by"]
       if(session["sort_movie_by"]!=nil && session["sort_movie_by"]!='')
         @movies = Movie.where(:rating =>@selected_ratings).order(session["sort_movie_by"]  + " ASC")

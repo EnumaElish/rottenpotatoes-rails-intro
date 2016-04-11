@@ -17,8 +17,8 @@ class MoviesController < ApplicationController
     @hiliteHeader = ''
     puts params
   
-   if(params.size == 2)
-   # if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
+   #if(params.size == 2)
+    if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
       session[:selected_ratings] = @all_ratings
       @selected_ratings = @all_ratings
       session["sort_movie_by"] = ''

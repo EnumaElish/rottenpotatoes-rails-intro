@@ -40,13 +40,13 @@ class MoviesController < ApplicationController
   
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
-      redirect_to controller: "movies", action: "index",sort_movie_by: session["sort_movie_by"],ratings: session[:selected_ratings]
+      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
     elsif (params["commit"] == "Refresh")
       if (params["ratings"]!=nil)
         session[:selected_ratings] = params["ratings"].keys
         @selected_ratings = params["ratings"].keys
       end
-      redirect_to controller: "movies", action: "index", sort_movie_by: session["sort_movie_by"],ratings:  session[:selected_ratings]
+      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
     else
       query_movies
     end

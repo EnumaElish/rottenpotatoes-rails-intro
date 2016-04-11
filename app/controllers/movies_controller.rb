@@ -41,20 +41,20 @@ class MoviesController < ApplicationController
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
       flash.keep
-      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
-      return
+      return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
+      
     elsif (params["commit"] == "Refresh")
       if (params["ratings"]!=nil)
         session[:selected_ratings] = params["ratings"]
         @selected_ratings = params["ratings"].keys
       end
       flash.keep
-      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
-      return
+     return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
+      
     elsif (params["fromShow"] == "fromShow" && (session["sort_movie_by"]!=nil || session[:selected_ratings]=!nil))
       flash.keep
-      redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
-      return
+     return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
+      
     else
       query_movies
     end

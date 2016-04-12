@@ -38,14 +38,13 @@ class MoviesController < ApplicationController
     end
   end
   
-  if(params.size==2 && (session["sort_movie_by"]!=nil || session[:selected_ratings]!=nil))
-    
-     redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
-     session["sort_movie_by"]=nil
-     session[:selected_ratings]=nil
-     return
-    
-  end
+  #if(params.size==2 && (session["sort_movie_by"]!=nil || session[:selected_ratings]!=nil))
+
+   #  redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
+    # session["sort_movie_by"]=nil
+     #session[:selected_ratings]=nil
+     #return
+  #end
   
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]

@@ -18,18 +18,11 @@ class MoviesController < ApplicationController
     puts params
   
   #if(params.size == 2)
-  if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
+  if(params.size==2 && session["sort_movie_by"]==nil && session[:selected_ratings]==nil)
       session[:selected_ratings] = @all_ratings
       @selected_ratings = @all_ratings
       session["sort_movie_by"] = ''
       @movies = Movie.all
-  end
-  
-  if(params["ratings"]!=nil)
-    if (params["ratings"]!=session[:selected_ratings])
-      session[:selected_ratings] = params["ratings"]
-      @selected_ratings = params["ratings"]
-    end
   end
   
   if (params["sort_movie_by"]!= nil)
@@ -38,13 +31,29 @@ class MoviesController < ApplicationController
     end
   end
   
-  #if(params.size==2 && (session["sort_movie_by"]!=nil || session[:selected_ratings]!=nil))
+  if(params.size==2 && (session["sort_movie_by"]!=nil || session[:selected_ratings]!=nil))
+     flash.keep
+     sortTemp=session["sort_movie_by"]
+     selectTemp=session[:selected_ratings]
+     redirect_to movies_path(:sort_movie_by=>sortTemp,:ratings=>selectTemp)
+     session["sort_movie_by"]=nil
+     session[:selected_ratings]=nil
+     return
+  end
+  
+  if(params["ratings"]!=nil)
+   # if (params["ratings"]!=session[:selected_ratings])
+      session[:selected_ratings] = params["ratings"]
+      
+    if( params["ratings"].kind_of?(Array))
+      @selected_ratings =  params["ratings"]
+    else
+      @selected_ratings =  params["ratings"].keys
+    end
 
-   #  redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
-    # session["sort_movie_by"]=nil
-     #session[:selected_ratings]=nil
-     #return
-  #end
+      
+   # end
+  end
   
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]

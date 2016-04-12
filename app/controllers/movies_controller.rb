@@ -17,7 +17,7 @@ class MoviesController < ApplicationController
     @hiliteHeader = ''
     puts params
   
-   #if(params.size == 2)
+  #if(params.size == 2)
   if(params.size==2 && (session["sort_movie_by"]==nil || session[:selected_ratings]==nil))
       session[:selected_ratings] = @all_ratings
       @selected_ratings = @all_ratings
@@ -38,6 +38,15 @@ class MoviesController < ApplicationController
     end
   end
   
+  if(params.size==2 && (session["sort_movie_by"]!=nil || session[:selected_ratings]!=nil))
+    
+     redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"],:ratings=>session[:selected_ratings])
+     session["sort_movie_by"]=nil
+     session[:selected_ratings]=nil
+     return
+    
+  end
+  
     if (params["orderItems"] == "orderItems" )
       session["sort_movie_by"] = params["sort_movie_by"]
       flash.keep
@@ -49,12 +58,10 @@ class MoviesController < ApplicationController
         @selected_ratings = params["ratings"].keys
       end
       flash.keep
-     return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
-      
-    elsif (params["fromShow"] == "fromShow" && (session["sort_movie_by"]!=nil || session[:selected_ratings]=!nil))
+      return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
+    elsif (params["fromShow"] == "fromShow" )
       flash.keep
-     return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
-      
+      return redirect_to movies_path(:sort_movie_by=>session["sort_movie_by"], :ratings=>session[:selected_ratings])
     else
       query_movies
     end
